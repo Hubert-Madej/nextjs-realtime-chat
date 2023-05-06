@@ -1,4 +1,7 @@
-export default function Home() {
+import { database } from "../lib/database"
+
+export default async function Home() {
+
   return (
     <div className="text-red-500">Test</div>
   )
