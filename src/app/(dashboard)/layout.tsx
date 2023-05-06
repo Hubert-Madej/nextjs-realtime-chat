@@ -8,6 +8,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ReactNode } from 'react'
 import { fetchRedis } from '../../helpers/redis'
+import { getFriendsByUserId } from '@/helpers/get-friends-by-user-id'
+import SidebarChatsList from '@/components/SidebarChatsList'
 
 interface LayoutProps {
  children: ReactNode
@@ -34,6 +36,8 @@ const Layout = async ({ children }: LayoutProps) => {
 
   if (!session) notFound()
 
+  const friends = await getFriendsByUserId(session.user.id);
+
   const unseenRequestsCount = (await fetchRedis('smembers', `user:${session.user.id}:incoming_friend_requests`) as User[]).length;
 
   return <div className='w-full flex h-screen'>
@@ -41,15 +45,15 @@ const Layout = async ({ children }: LayoutProps) => {
         <Link href='/dashboard' className='flex h-16 shrink-0 items-center'>
           <h1 className='font-semibold text-3xl leading-6 tracking-wider text-gray-400'>Chat<span className='ml-2 font-medium text-indigo-600'>App</span></h1>
         </Link>
-          <div className='text-xs font-semibold leading-6 text-gray-400'>
-              Your chats
-          </div>
+          {friends.length > 0 && <div className='text-xs font-semibold leading-6 text-gray-400'>Your chats</div>}
 
           <nav className='flex flex-1 flex-col'>
             <ul role='list' className='flex flex-1 flex-col gap-y-7'>
-              <li>
-                chats that this user has
-              </li>
+              {friends.length > 0 && 
+                <li>
+                    <SidebarChatsList friends={friends} sessionId={session.user.id} />
+                </li>
+              }
               <li>
                 <div className='text-xs font-semibold leading-6 text-gray-400'>
                   Activity
@@ -90,7 +94,7 @@ const Layout = async ({ children }: LayoutProps) => {
                     <span className='sr-only'>Your profile</span>
                     <div className='flex flex-col'>
                       <span aria-hidden='true'>{session.user.name}</span>
-                      <span className='text-xs text-zinc-400' aria-hidden="true">{session.user.email}</span>
+                      <span className='text-xs text-zinc-400 w-36 truncate' aria-hidden="true">{session.user.email}</span>
                     </div>
                   </div>
 
@@ -99,9 +103,7 @@ const Layout = async ({ children }: LayoutProps) => {
             </ul>
           </nav>
         </div>
-      <div className='p-4'>
         {children}
-      </div>
     </div>
 }
 
