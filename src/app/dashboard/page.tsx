@@ -1,14 +1,14 @@
-import Button from "@/components/ui/Button";
-import { FunctionComponent } from "react";
+import Button from '@/components/ui/Button';
+import { FC } from 'react'
 
 interface pageProps {
   
 }
- 
-const page: FunctionComponent<pageProps> = () => {
+
+const page: FC<pageProps> = ({}) => {
   return ( <div className="p-8">
-    <Button>Initial Application Template</Button>
+    <Button type="button">Initial Application Template</Button>
   </div> );
 }
- 
-export default page;
+
+export default page
