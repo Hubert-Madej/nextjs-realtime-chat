@@ -1,4 +1,4 @@
-import { fetchRedis } from "@/app/helpers/redis";
+import { fetchRedis } from "@/helpers/redis";
 import { authOptions } from "@/lib/auth";
 import { database } from "@/lib/database";
 import { addFriendValidator } from "@/lib/validations/add-friend";
@@ -41,6 +41,21 @@ export async function POST(req: Request) {
     if (isAlreadyAdded) {
       return new Response(
         `You've already sent a friend request to ${emailToAdd}.`,
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const isAlreadyRequested = (await fetchRedis(
+      "sismember",
+      `user:${session?.user.id}:incoming_friend_requests`,
+      idToAdd
+    )) as 0 | 1;
+
+    if (isAlreadyRequested) {
+      return new Response(
+        `You have a pending friend request from ${emailToAdd}.`,
         {
           status: 400,
         }
