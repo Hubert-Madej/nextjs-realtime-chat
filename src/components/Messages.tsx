@@ -2,17 +2,25 @@
 
 import { cn } from '@/lib/utils';
 import { Message } from '@/lib/validations/message';
+import { format } from 'date-fns';
+import Image from 'next/image';
 import { FC, useRef, useState } from 'react'
 
 interface MessagesProps {
   sessionId: string;
   initialMessages: Message[];
+  sessionImg: string | null | undefined;
+  chatPartner: User
 }
 
-const Messages: FC<MessagesProps> = ({ sessionId, initialMessages }) => {
+const Messages: FC<MessagesProps> = ({ sessionId, initialMessages, sessionImg, chatPartner }) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
 
   const scrollDownRef = useRef<HTMLDivElement | null>(null);
+
+  const formatTimestamp = (timestamp: number) => {
+    return format(timestamp, 'HH:mm');
+  }
 
   return <div id='messages' className='flex w-full flex-1 flex-col-reverse gap-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch'>
     <div ref={scrollDownRef} />
@@ -20,7 +28,6 @@ const Messages: FC<MessagesProps> = ({ sessionId, initialMessages }) => {
     {messages.map((message, index) => {
         const isCurrentUser = message.senderId === sessionId;
         const hasNextMessageFromSameUser = messages[index - 1]?.senderId === messages[index].senderId;
-        const messageDate = new Date(message.timestamp).toDateString()
 
         return <div className='chat-message' key={`${message.id}-${message.timestamp}`}>
           <div className={cn('flex items-end', {
@@ -40,9 +47,22 @@ const Messages: FC<MessagesProps> = ({ sessionId, initialMessages }) => {
                   'rounded-bl-none': !hasNextMessageFromSameUser && !isCurrentUser
                 })}>{message.text}{' '}
                   <span className='ml-2 text-xs text-gray-400'>
-                    {messageDate}
+                    {formatTimestamp(message.timestamp)}
                   </span>
                 </span>
+            </div>
+              <div className={cn(`relative w-6 h-6`, {
+              'order-2': isCurrentUser,
+              'order-1': !isCurrentUser,
+              invisible: hasNextMessageFromSameUser
+            })}>
+              <Image 
+              fill
+              src={isCurrentUser ? (sessionImg as string): chatPartner.image}
+              alt='Profile picture'
+              referrerPolicy='no-referrer'
+              className='rounded-full'
+              />
             </div>
           </div>
         </div>
