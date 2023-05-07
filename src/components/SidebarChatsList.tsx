@@ -9,7 +9,6 @@ import NewMessageToast from './NewMessageToast'
 
 interface SidebarChatsListProps {
   sessionId: string,
-  chatId: string;
   friends: User[] 
 }
 
@@ -18,7 +17,7 @@ interface ExtendedMessage extends Message {
   senderName: string;
 }
 
-const SidebarChatsList: FC<SidebarChatsListProps> = ({sessionId, chatId, friends}) => {
+const SidebarChatsList: FC<SidebarChatsListProps> = ({sessionId, friends}) => {
   const router = useRouter();
   const pathName = usePathname();
   const [unseenMessages, setUnseenMessages] = useState<Message[]>([]);
@@ -29,7 +28,6 @@ const SidebarChatsList: FC<SidebarChatsListProps> = ({sessionId, chatId, friends
 
     const chatHandler = (newMessage: ExtendedMessage) => {
       const shouldNotify = pathName !== `/dashboard/chat/${chatHrefConstructor(sessionId, newMessage.senderId)}`;
-
       if (!shouldNotify) return;
       
       toast.custom((t) => (
