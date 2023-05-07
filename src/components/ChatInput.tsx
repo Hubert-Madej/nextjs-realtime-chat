@@ -34,7 +34,7 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId}) => {
   return <div className='border-t border-gray-200 px-4 pt-4 mb-2 sm:mb-0'>
     <div className='relative flex-1 overflow-hidden rounded-lg shadow-sm ring-1 ring-insert ring-gray-300 focus-within:ring-2 focus-within:ring-blue-400'>
       <TextareaAutosize ref={textareaRef} onKeyDown={(e)=> {
-        if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === 'Enter' && !e.shiftKey && input.trim().length > 0) {
           e.preventDefault()
           sendMessage()
         }
@@ -57,7 +57,7 @@ const ChatInput: FC<ChatInputProps> = ({chatPartner, chatId}) => {
        </div>
        <div className='absolute right-0 bottom-0 flex justify-between py-2 pl-3 pr-2'>
         <div className='flex-shrink-0'>
-          <Button isLoading={isLoading} onClick={sendMessage} type='submit'>Send</Button>
+          <Button isLoading={isLoading} disabled={input.trim().length === 0} onClick={sendMessage} type='submit'>Send</Button>
         </div>
        </div>
     </div>
