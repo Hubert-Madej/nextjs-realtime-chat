@@ -41,7 +41,7 @@ const FriendRequests: FC<FriendRequestsProps> = ({
       );
       pusherClient.unbind("incoming_friend_requests", firendRequestsHandler);
     };
-  });
+  }, [sessionId]);
 
   const acceptFriend = async (senderId: string) => {
     try {
